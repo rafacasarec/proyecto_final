@@ -1,0 +1,55 @@
+version: 2
+
+sources:
+
+  - name: redes_sociales # name of the source 
+    schema: redes_sociales # this is the schema our raw data lives in
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB" # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 365, period: day}
+      error_after: {count: 500, period: day}
+
+    tables:
+      - name: resultados_rrss
+        description: "Resultados de métricas en redes sociales para artistas."
+        columns:
+          - name: NOMBRE_DEL_ARTISTA
+            description: "Nombre del artista en las redes sociales."
+          - name: NUMERO_DE_SEGUIDORES_EN_INSTAGRAM
+            description: "Cantidad de seguidores en Instagram."
+          - name: TOTAL_DE_LIKES_EN_INSTAGRAM
+            description: "Total de likes en publicaciones de Instagram."
+          - name: TOTAL_DE_COMENTARIOS_EN_INSTAGRAM
+            description: "Total de comentarios en publicaciones de Instagram."
+          - name: TOTAL_DE_MENCIONES_EN_HISTORIAS_INSTAGRAMX
+            description: "Cantidad de menciones en historias de Instagram."
+          - name: TOTAL_DE_USO_DE_CANCIONES_EN_REELS_E_HISTORIAS_INSTAGRAMX
+            description: "Cantidad de veces que se usaron canciones en reels e historias de Instagram."
+          - name: N_MERO_DE_SEGUIDORES_EN_X
+            description: "Número de seguidores en la plataforma X (anteriormente conocida como Twitter)."
+          - name: TOTAL_DE_LIKES_EN_X
+            description: "Total de likes en publicaciones de la plataforma X."
+          - name: TOTAL_DE_REPOSTS_EN_X
+            description: "Total de reposts en la plataforma X."
+          - name: NUMERO_DE_SEGUIDORES_EN_TIK_TOK
+            description: "Cantidad de seguidores en TikTok."
+          - name: TOTAL_DE_USO_DE_CANCIONES_EN_TIK_TOK
+            description: "Cantidad de veces que se usaron canciones en TikTok."
+          - name: ENGAGEMENT_RATE_INSTAGRAMX
+            description: "Engagement rate en Instagram."
+          - name: ENGAGEMENT_RATE_XX
+            description: "Engagement rate en la plataforma X."
+          - name: ESCALADA_DE_SEGUIDORES_LTIMA_SEMANAX
+            description: "Incremento en el número de seguidores durante la última semana en la plataforma X."
+          - name: FECHA
+            description: "Fecha de la captura de datos."
+          - name: _DLT_LOAD_ID
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _DLT_ID
+            description: "Identificador único del registro (interno de DLT)."
