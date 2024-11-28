@@ -1,0 +1,203 @@
+version: 2
+
+sources:
+
+  - name: spotify # name of the source 
+    schema: spotify # this is the schema our raw data lives in
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB" # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 365, period: day}
+      error_after: {count: 500, period: day}
+
+    tables:
+      - name: dim_album
+        description: "Información de los álbumes disponibles en Spotify."
+        columns:
+          - name: album_id
+            description: "Identificador único del álbum."
+          - name: nombre
+            description: "Nombre del álbum."
+          - name: fecha_lanzamiento
+            description: "Fecha de lanzamiento del álbum."
+          - name: artista_principal_id
+            description: "Identificador único del artista principal del álbum."
+          - name: artista_principal_name
+            description: "Nombre del artista principal del álbum."
+          - name: total_canciones
+            description: "Número total de canciones en el álbum."
+          - name: spotify_url
+            description: "URL del álbum en Spotify."
+          - name: imagen_url
+            description: "URL de la imagen de portada del álbum."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
+      
+      - name: dim_artista
+        description: "Información de los artistas en Spotify."
+        columns:
+          - name: artista_id
+            description: "Identificador único del artista."
+          - name: nombre
+            description: "Nombre del artista."
+          - name: generos
+            description: "Géneros asociados al artista."
+          - name: seguidores
+            description: "Cantidad de seguidores del artista en Spotify."
+          - name: popularidad
+            description: "Puntuación de popularidad del artista en Spotify."
+          - name: spotify_url
+            description: "URL del perfil del artista en Spotify."
+          - name: imagen_url
+            description: "URL de la imagen del artista."
+          - name: genero_id
+            description: "Identificador del género asociado al artista."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
+          
+      - name: dim_cancion
+        description: "Información sobre las canciones disponibles en Spotify."
+        columns:
+          - name: cancion_id
+            description: "Identificador único de la canción."
+          - name: titulo
+            description: "Título de la canción."
+          - name: album_id
+            description: "Identificador del álbum al que pertenece la canción."
+          - name: album_name
+            description: "Nombre del álbum."
+          - name: album_release_date
+            description: "Fecha de lanzamiento del álbum."
+          - name: artista_id
+            description: "Identificador del artista principal de la canción."
+          - name: artista_name
+            description: "Nombre del artista principal."
+          - name: duracion_ms
+            description: "Duración de la canción en milisegundos."
+          - name: explicit
+            description: "Indica si la canción tiene contenido explícito."
+          - name: popularidad
+            description: "Puntuación de popularidad de la canción en Spotify."
+          - name: spotify_url
+            description: "URL de la canción en Spotify."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
+      
+      - name: dim_competidores
+        description: "Información sobre los competidores relacionados con artistas principales."
+        columns:
+          - name: competidor_id
+            description: "Identificador único del competidor."
+          - name: nombre
+            description: "Nombre del competidor."
+          - name: genero_asociado
+            description: "Género principal asociado al competidor."
+          - name: seguidores
+            description: "Cantidad de seguidores del competidor en Spotify."
+          - name: popularidad
+            description: "Puntuación de popularidad del competidor en Spotify."
+          - name: spotify_url
+            description: "URL del competidor en Spotify."
+          - name: artista_principal_id
+            description: "Identificador del artista principal relacionado con el competidor."
+          - name: artista_principal_name
+            description: "Nombre del artista principal relacionado con el competidor."
+          - name: fecha_lanzamiento
+            description: "Fecha de lanzamiento del competidor."
+          - name: total_canciones
+            description: "Número total de canciones del competidor."
+          - name: imagen_url
+            description: "URL de la imagen del competidor."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
+
+      - name: dim_fecha
+        description: "Tabla de fechas para análisis temporal."
+        columns:
+          - name: fecha
+            description: "Fecha específica en formato YYYY-MM-DD."
+          - name: dia
+            description: "Día del mes."
+          - name: mes
+            description: "Mes del año."
+          - name: nombre_mes
+            description: "Nombre del mes."
+          - name: a_o
+            description: "Año."
+          - name: trimestre
+            description: "Trimestre del año."
+          - name: dia_semana
+            description: "Nombre del día de la semana."
+          - name: es_fin_semana
+            description: "Indica si es fin de semana (TRUE o FALSE)."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
+
+      - name: dim_genero
+        description: "Información sobre géneros musicales en Spotify."
+        columns:
+          - name: genero_id
+            description: "Identificador único del género."
+          - name: nombre
+            description: "Nombre del género musical."
+          - name: popularidad_global
+            description: "Puntuación de popularidad global del género."
+          - name: numero_artistas
+            description: "Número total de artistas asociados al género."
+          - name: numero_canciones
+            description: "Número total de canciones asociadas al género."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
+
+      - name: fct_top_50
+        description: "Información consolidada de la lista Top 50 de Spotify."
+        columns:
+          - name: playlist_id
+            description: "Identificador único de la playlist."
+          - name: fecha
+            description: "Fecha de captura de los datos del top 50."
+          - name: timestamp
+            description: "Timestamp exacto de captura de los datos."
+          - name: position
+            description: "Posición de la canción en el ranking del Top 50."
+          - name: track_id
+            description: "Identificador único de la canción."
+          - name: track_name
+            description: "Nombre de la canción."
+          - name: artist_id
+            description: "Identificador del artista principal."
+          - name: artist_name
+            description: "Nombre del artista principal."
+          - name: album_id
+            description: "Identificador del álbum asociado a la canción."
+          - name: album_name
+            description: "Nombre del álbum asociado a la canción."
+          - name: release_date
+            description: "Fecha de lanzamiento del álbum."
+          - name: duration_ms
+            description: "Duración de la canción en milisegundos."
+          - name: popularity
+            description: "Puntuación de popularidad de la canción."
+          - name: streams_estimados
+            description: "Cantidad estimada de streams para la canción."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
