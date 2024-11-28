@@ -1,0 +1,65 @@
+version: 2
+
+sources:
+
+  - name: bluesky # name of the source 
+    schema: bluesky # this is the schema our raw data lives in
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB" # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 365, period: day}
+      error_after: {count: 500, period: day}
+
+    tables:
+      - name: dim_posts_artistas
+        description: "Publicaciones relacionadas con artistas en Bluesky."
+        columns:
+          - name: id
+            description: "Identificador único de la publicación."
+          - name: author_handle
+            description: "Handle del autor que publicó el contenido."
+          - name: content
+            description: "Contenido del texto publicado."
+          - name: created_at
+            description: "Timestamp de creación de la publicación."
+          - name: reply_count
+            description: "Cantidad de respuestas a la publicación."
+          - name: repost_count
+            description: "Cantidad de veces que se ha compartido (repost) la publicación."
+          - name: like_count
+            description: "Cantidad de likes recibidos por la publicación."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
+          - name: mentioned_artist
+            description: "Nombre del artista mencionado en la publicación."
+
+      - name: dim_posts_songs
+        description: "Publicaciones relacionadas con canciones en Bluesky."
+        columns:
+          - name: id
+            description: "Identificador único de la publicación."
+          - name: author_handle
+            description: "Handle del autor que publicó el contenido."
+          - name: content
+            description: "Contenido del texto publicado."
+          - name: created_at
+            description: "Timestamp de creación de la publicación."
+          - name: reply_count
+            description: "Cantidad de respuestas a la publicación."
+          - name: repost_count
+            description: "Cantidad de veces que se ha compartido (repost) la publicación."
+          - name: like_count
+            description: "Cantidad de likes recibidos por la publicación."
+          - name: _dlt_load_id
+            description: "Identificador del proceso de carga (interno de DLT)."
+          - name: _dlt_id
+            description: "Identificador único del registro (interno de DLT)."
+          - name: mentioned_song
+            description: "Título de la canción mencionada en la publicación."

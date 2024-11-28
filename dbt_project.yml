@@ -43,3 +43,7 @@ models:
       +materialized: view
       redes_sociales:
         +schema: redes_sociales
+      spotify:
+        +schema: spotify
+      bluesky: 
+        +schema: bluesky
