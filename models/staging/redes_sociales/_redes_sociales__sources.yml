@@ -21,8 +21,13 @@ sources:
         columns:
           - name: NOMBRE_DEL_ARTISTA
             description: "Nombre del artista en las redes sociales."
+            tests:
+              - not_null
+              - unique
           - name: NUMERO_DE_SEGUIDORES_EN_INSTAGRAM
             description: "Cantidad de seguidores en Instagram."
+            tests:
+              - not_null
           - name: TOTAL_DE_LIKES_EN_INSTAGRAM
             description: "Total de likes en publicaciones de Instagram."
           - name: TOTAL_DE_COMENTARIOS_EN_INSTAGRAM
@@ -49,6 +54,9 @@ sources:
             description: "Incremento en el número de seguidores durante la última semana en la plataforma X."
           - name: FECHA
             description: "Fecha de la captura de datos."
+            tests:
+              - not_null
+              - unique
           - name: _DLT_LOAD_ID
             description: "Identificador del proceso de carga (interno de DLT)."
           - name: _DLT_ID

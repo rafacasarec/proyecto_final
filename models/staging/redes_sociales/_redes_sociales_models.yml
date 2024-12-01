@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: tendencia_rrss  # Nombre del primer modelo
+    description: "Modelo que analiza la tendencia de los artistas en redes sociales basado en la descripción de tendencia y el incremento social."
+    columns:
+      - name: id_tendencia
+        description: "Clave única generada para identificar cada descripción de tendencia."
+        tests:
+          - unique
+          - not_null
+      - name: desc_tendencia
+        description: "Descripción de si el artista está en tendencia."
+        tests:
+          - not_null
+      - name: first_name
+        description: "Nombre del artista."
+        tests:
+          - not_null
+      - name: social_improve
+        description: "Incremento de seguidores durante la última semana."
+        tests:
+          - not_null
+
+  - name: estatus_rrss  # Nombre del segundo modelo
+    description: "Modelo que evalúa el estatus de los artistas en redes sociales basándose en métricas clave como seguidores, likes y engagement."
+    columns:
+      - name: id_estatus
+        description: "Clave única generada para identificar cada descripción de estatus."
+        tests:
+          - unique
+          - not_null
+      - name: desc_estatus
+        description: "Descripción del estatus del artista."
+        tests:
+          - not_null
+      - name: first_name
+        description: "Nombre del artista."
+        tests:
+          - not_null
+      - name: followers_insta
+        description: "Número total de seguidores en Instagram."
+      - name: total_likes_insta
+        description: "Número total de likes en publicaciones de Instagram."
+      - name: total_coment_insta
+        description: "Número total de comentarios en publicaciones de Instagram."
+      - name: mentioned_history_insta
+        description: "Cantidad de menciones en historias de Instagram."
+      - name: songs_played_insta
+        description: "Cantidad de veces que se usaron canciones en reels e historias de Instagram."
+      - name: engagement_rate_instagram
+        description: "Tasa de interacción del artista en Instagram."
+      - name: followers_X
+        description: "Número total de seguidores en la plataforma X."
+      - name: total_likes_X
+        description: "Número total de likes en publicaciones de la plataforma X."
+      - name: total_reposts_X
+        description: "Número total de reposts en la plataforma X."
+      - name: engagement_rate_X
+        description: "Tasa de interacción del artista en la plataforma X."
+      - name: followers_tiktok
+        description: "Número total de seguidores en TikTok."
+      - name: songs_played_tiktok
+        description: "Cantidad de veces que se usaron canciones en TikTok."
