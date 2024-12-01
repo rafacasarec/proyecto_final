@@ -21,12 +21,19 @@ sources:
         columns:
           - name: id
             description: "Identificador único de la publicación."
+            tests:
+              - unique
+              - not_null
           - name: author_handle
             description: "Handle del autor que publicó el contenido."
+            tests:
+              - not_null
           - name: content
             description: "Contenido del texto publicado."
           - name: created_at
             description: "Timestamp de creación de la publicación."
+            tests:
+              - not_null
           - name: reply_count
             description: "Cantidad de respuestas a la publicación."
           - name: repost_count
@@ -45,12 +52,19 @@ sources:
         columns:
           - name: id
             description: "Identificador único de la publicación."
+            tests:
+              - unique
+              - not_null
           - name: author_handle
             description: "Handle del autor que publicó el contenido."
+            tests:
+              - not_null
           - name: content
             description: "Contenido del texto publicado."
           - name: created_at
             description: "Timestamp de creación de la publicación."
+            tests:
+              - not_null
           - name: reply_count
             description: "Cantidad de respuestas a la publicación."
           - name: repost_count

@@ -1,13 +1,10 @@
 with 
 
 source as (
-
     select * from {{ ref('base_redes_sociales__resultados_rrss') }}
-
 ),
 
 renamed as (
-
     select
         {{ dbt_utils.generate_surrogate_key(['desc_estatus']) }} as id_estatus,
         desc_estatus,
@@ -25,7 +22,6 @@ renamed as (
         followers_tiktok,
         songs_played_tiktok
     from source
-
 )
 
 select * from renamed

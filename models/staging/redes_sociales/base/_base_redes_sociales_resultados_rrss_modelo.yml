@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: base_rrss  # Cambia este nombre si el modelo tiene un nombre diferente
+    description: "Modelo base que transforma y normaliza los datos de métricas de redes sociales provenientes de la tabla resultados_rrss."
+    columns:
+      - name: id_rrss
+        description: "Clave única generada para identificar cada artista en las redes sociales."
+        tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: "Nombre del artista en las redes sociales."
+        tests:
+          - not_null
+      - name: followers_insta
+        description: "Número total de seguidores del artista en Instagram."
+        tests:
+          - not_null
+      - name: total_likes_insta
+        description: "Número total de likes en publicaciones de Instagram."
+      - name: total_coment_insta
+        description: "Número total de comentarios en publicaciones de Instagram."
+      - name: mentioned_history_insta
+        description: "Cantidad de menciones en historias de Instagram."
+      - name: songs_played_insta
+        description: "Cantidad de veces que se usaron canciones en reels e historias de Instagram."
+      - name: followers_X
+        description: "Número total de seguidores en la plataforma X (anteriormente conocida como Twitter)."
+      - name: total_likes_X
+        description: "Número total de likes en publicaciones de la plataforma X."
+      - name: total_reposts_X
+        description: "Número total de reposts en la plataforma X."
+      - name: followers_tiktok
+        description: "Número total de seguidores en TikTok."
+      - name: songs_played_tiktok
+        description: "Cantidad de veces que se usaron canciones en TikTok."
+      - name: engagement_rate_instagram
+        description: "Tasa de interacción del artista en Instagram."
+      - name: engagement_rate_X
+        description: "Tasa de interacción del artista en la plataforma X."
+      - name: social_improve
+        description: "Incremento de seguidores durante la última semana en la plataforma X."
+      - name: desc_estatus
+        description: "Descripción del estatus del artista, en minúsculas."
+      - name: id_estatus
+        description: "Clave única generada para identificar el estatus del artista."
+        tests:
+          - unique
+          - not_null
+      - name: desc_tendencia
+        description: "Descripción del indicador de tendencia del artista, en minúsculas."
+      - name: id_tendencia
+        description: "Clave única generada para identificar si el artista está en tendencia."
+        tests:
+          - unique
+          - not_null
+      - name: date
+        description: "Fecha transformada a formato timestamp."
+        tests:
+          - not_null
+      - name: _dlt_load_id
+        description: "Identificador del proceso de carga en DLT."
+      - name: _dlt_id
+        description: "Identificador único del registro en DLT."
