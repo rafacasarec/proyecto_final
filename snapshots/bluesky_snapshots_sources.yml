@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+
+  - name: top50_snp # name of the source 
+    schema: spotify # this is the schema our raw data lives in
+    database: ALUMNO16_DEV_BRONZE_DB # this is the name of our database
+
+    tables:
+      - name: fct_top_50
+        columns:
+          - name: playlist_id
+          - name: fecha
+          - name: timestamp
+          - name: position
+          - name: track_id
+          - name: track_name
+          - name: artist_id
+          - name: artist_name
+          - name: album_id
+          - name: album_name
+          - name: release_date
+          - name: duration_ms
+          - name: popularity
+          - name: streams_estimados
+          - name: _dlt_load_id
+          - name: _dlt_id

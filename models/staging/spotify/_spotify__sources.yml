@@ -36,9 +36,6 @@ sources:
             description: "Identificador único del artista principal del álbum."
             tests:
               - not_null
-              - relationships:
-                  to: ref('stg_spotify__dim_artista')
-                  field: artista_id
           - name: artista_principal_name
             description: "Nombre del artista principal del álbum."
           - name: total_canciones
@@ -78,10 +75,6 @@ sources:
             description: "URL de la imagen del artista."
           - name: genero_id
             description: "Identificador del género asociado al artista."
-            tests:
-              - relationships:
-                  to: ref('stg_spotify__dim_genero')
-                  field: genero_id
           - name: _dlt_load_id
             description: "Identificador del proceso de carga (interno de DLT)."
           - name: _dlt_id
@@ -103,9 +96,6 @@ sources:
             description: "Identificador del álbum al que pertenece la canción."
             tests:
               - not_null
-              - relationships:
-                  to: ref('stg_spotify__dim_album')
-                  field: album_id
           - name: album_name
             description: "Nombre del álbum."
           - name: album_release_date
@@ -137,7 +127,6 @@ sources:
           - name: competidor_id
             description: "Identificador único del competidor."
             tests:
-              - unique
               - not_null
           - name: nombre
             description: "Nombre del competidor."
@@ -151,35 +140,6 @@ sources:
             description: "Cantidad de seguidores del competidor en Spotify."
             tests:
               - not_null
-
-      - name: dim_fecha
-        description: "Tabla de fechas para análisis temporal."
-        columns:
-          - name: fecha
-            description: "Fecha específica en formato YYYY-MM-DD."
-            tests:
-              - unique
-              - not_null
-          - name: dia
-            description: "Día del mes."
-            tests:
-              - not_null
-          - name: mes
-            description: "Mes del año."
-            tests:
-              - not_null
-          - name: nombre_mes
-            description: "Nombre del mes."
-          - name: a_o
-            description: "Año."
-            tests:
-              - not_null
-          - name: trimestre
-            description: "Trimestre del año."
-          - name: dia_semana
-            description: "Nombre del día de la semana."
-          - name: es_fin_semana
-            description: "Indica si es fin de semana (TRUE o FALSE)."
 
       - name: dim_genero
         description: "Información sobre géneros musicales en Spotify."

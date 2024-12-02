@@ -6,11 +6,8 @@ source as (
 
 split_generos as (
     select
-        artista_id,
+        artist_id,
         name_artist, -- Nombre correcto desde staging
-        followers,
-        popularity,
-        spotify_url,
         _dlt_load_id,
         _dlt_id,
         -- Dividir generos en una lista (ajustado a lo que debería venir de staging)
@@ -20,11 +17,8 @@ split_generos as (
 
 normalized as (
     select
-        artista_id,
+        artist_id,
         name_artist,
-        followers,
-        popularity,
-        spotify_url,
         _dlt_load_id,
         _dlt_id,
         trim(value) as genero -- Extraer y limpiar cada género
@@ -34,11 +28,8 @@ normalized as (
 
 hashed as (
     select
-        artista_id,
+        artist_id,
         name_artist,
-        followers,
-        popularity,
-        spotify_url,
         _dlt_load_id,
         _dlt_id,
         genero,
@@ -48,11 +39,8 @@ hashed as (
 )
 
 select
-    artista_id,
+    artist_id,
     name_artist,
-    followers,
-    popularity,
-    spotify_url,
     _dlt_load_id,
     _dlt_id,
     genero,

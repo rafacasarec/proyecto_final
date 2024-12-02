@@ -10,7 +10,7 @@ renamed AS (
     SELECT
         album_id,
         desc_album,
-        artista_id,
+        artist_id,
         name_artist,
         release_date,
         total_songs,
@@ -38,7 +38,7 @@ deduplicated AS (
 SELECT 
     album_id,
     desc_album,
-    artista_id,
+    artist_id,
     name_artist,
     release_date,
     total_songs,

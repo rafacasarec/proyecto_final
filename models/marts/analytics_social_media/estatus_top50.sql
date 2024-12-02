@@ -1,64 +1,66 @@
-with 
--- Base del estatus desde redes sociales
-estatus as (
-    select
-        artist_name,
+WITH 
+
+-- Base del estatus desde dim_artist_status
+estatus AS (
+    SELECT
+        first_name,
         followers_insta,
         followers_X,
         desc_estatus
-    from {{ ref('dim_artist_status') }}
+    FROM {{ ref('dim_artist_status') }}
 ),
 
--- Base del Top 50 desde Spotify
-top50 as (
-    select
-        id_song,
+-- Base del Top 50 desde fct_top_50
+top50 AS (
+    SELECT
+        song_id,
         desc_song,
         position,
-        split(artist_name, ',') as artist_name_list
-    from {{ ref('fct_top_50') }}
+        SPLIT(artist_name, ',') AS artist_name_list
+    FROM {{ ref('fct_top_50') }}
 ),
 
 -- Normalizar artistas desde Top 50
-normalized_top50 as (
-    select
+normalized_top50 AS (
+    SELECT
         t.position,
-        trim(a.value) as artist_name -- Extraer nombres de artistas desde la lista
-    from top50 t,
-    lateral flatten(input => t.artist_name_list) as a
+        TRIM(a.value) AS artist_name -- Extraer nombres de artistas desde la lista
+    FROM top50 t,
+    LATERAL FLATTEN(input => t.artist_name_list) AS a
 ),
 
--- Información de seguidores en Spotify desde dim_artista
-spotify_followers as (
-    select
-        name_artist as artist_name,
-        followers as spotify_followers
-    from {{ ref('dim_artista') }}
+-- Información de seguidores en Spotify desde fct_artista
+spotify_followers AS (
+    SELECT
+        nombre AS artist_name, -- Corregido: el nombre del artista está en `nombre`
+        followers AS spotify_followers
+    FROM {{ ref('fct_artista') }}
 ),
 
 -- Consolidar datos
-consolidated as (
-    select
-        e.artist_name,
+consolidated AS (
+    SELECT
+        e.first_name,
         e.followers_insta,
         e.followers_X,
         s.spotify_followers,
         e.desc_estatus,
-        min(t.position) as top50_position -- Obtener la mejor posición en el Top 50
-    from estatus e
-    left join normalized_top50 t
-        on lower(e.artist_name) = lower(t.artist_name) -- Relacionar por nombre del artista
-    left join spotify_followers s
-        on lower(e.artist_name) = lower(s.artist_name) -- Relacionar por nombre del artista
-    group by e.artist_name, e.followers_insta, e.followers_X, s.spotify_followers, e.desc_estatus
+        MIN(t.position) AS top50_position -- Obtener la mejor posición en el Top 50
+    FROM estatus e
+    LEFT JOIN normalized_top50 t
+        ON LOWER(e.first_name) = LOWER(t.artist_name) -- Relacionar por nombre del artista
+    LEFT JOIN spotify_followers s
+        ON LOWER(e.first_name) = LOWER(s.artist_name) -- Relacionar por nombre del artista
+    GROUP BY e.first_name, e.followers_insta, e.followers_X, s.spotify_followers, e.desc_estatus
 )
 
-select
-    artist_name,
+-- Resultado final
+SELECT
+    first_name,
     followers_insta,
     followers_X,
     spotify_followers,
     desc_estatus,
     top50_position
-from consolidated
-order by desc_estatus desc
+FROM consolidated
+ORDER BY desc_estatus DESC

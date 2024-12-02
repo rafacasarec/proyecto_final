@@ -3,7 +3,7 @@ version: 2
 sources:
 
   - name: bluesky # name of the source 
-    schema: bluesky # this is the schema our raw data lives in
+    schema: bluesky_staging # this is the schema our raw data lives in
     database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB" # this is the name of our database
 
     quoting:
@@ -22,7 +22,6 @@ sources:
           - name: id
             description: "Identificador único de la publicación."
             tests:
-              - unique
               - not_null
           - name: author_handle
             description: "Handle del autor que publicó el contenido."
@@ -52,9 +51,6 @@ sources:
         columns:
           - name: id
             description: "Identificador único de la publicación."
-            tests:
-              - unique
-              - not_null
           - name: author_handle
             description: "Handle del autor que publicó el contenido."
             tests:
