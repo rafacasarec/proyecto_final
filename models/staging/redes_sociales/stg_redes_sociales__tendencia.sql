@@ -12,7 +12,8 @@ renamed as (
         {{ dbt_utils.generate_surrogate_key(['desc_tendencia']) }} as id_tendencia,
         desc_tendencia,
         first_name,
-        social_improve,
+        {{ dbt_utils.generate_surrogate_key(['first_name']) }} as artist_id,
+        social_improve
     from base_orders
 
 )

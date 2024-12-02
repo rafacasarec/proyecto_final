@@ -13,7 +13,7 @@ models:
         description: "Nombre o título del álbum."
         tests:
           - not_null
-      - name: artista_id
+      - name: artist_id
         description: "Identificador único del artista principal del álbum."
         tests:
           - not_null
@@ -35,10 +35,9 @@ models:
   - name: stg_spotify__dim_artista
     description: "Modelo que transforma y normaliza los datos de artistas en Spotify, incluyendo sus géneros, seguidores, y popularidad. También genera identificadores únicos para los géneros."
     columns:
-      - name: artista_id
+      - name: artist_id
         description: "Identificador único del artista."
         tests:
-          - unique
           - not_null
       - name: name_artist
         description: "Nombre del artista."
@@ -58,17 +57,14 @@ models:
         description: "Género asociado al artista. Extraído y limpiado de la lista de géneros original."
       - name: genero_id
         description: "Identificador único generado para cada género asociado al artista."
-        tests:
-          - unique
 
 
   - name: stg_spotify__dim_cancion
     description: "Modelo que normaliza los datos de canciones en Spotify, manejando múltiples artistas por canción y estandarizando información clave como popularidad, duración y álbumes asociados."
     columns:
-      - name: cancion_id
+      - name: song_id
         description: "Identificador único de la canción."
         tests:
-          - unique
           - not_null
       - name: desc_song
         description: "Descripción o título de la canción."
@@ -92,7 +88,7 @@ models:
         description: "Identificador del proceso de carga en DLT."
       - name: _dlt_id
         description: "Identificador único del registro en DLT."
-      - name: artista_id
+      - name: artist_id
         description: "Identificador único del artista relacionado con la canción."
         tests:
           - not_null
@@ -107,7 +103,6 @@ models:
       - name: artist_id
         description: "Identificador único del competidor (artista)."
         tests:
-          - unique
           - not_null
       - name: name_artist
         description: "Nombre del competidor (artista)."
@@ -115,42 +110,13 @@ models:
           - not_null
       - name: genero
         description: "Género principal asociado al competidor."
+      - name: genero_id
       - name: followers
         description: "Cantidad de seguidores del competidor en Spotify."
       - name: popularity
         description: "Puntuación de popularidad del competidor en Spotify."
       - name: spotify_url
         description: "URL del perfil del competidor en Spotify."
-      - name: _dlt_load_id
-        description: "Identificador del proceso de carga en DLT."
-      - name: _dlt_id
-        description: "Identificador único del registro en DLT."
-
-
-  - name: stg_spotify__dim_fecha
-    description: "Modelo que organiza y estandariza la tabla de fechas para análisis temporal en Spotify."
-    columns:
-      - name: fecha
-        description: "Fecha específica en formato YYYY-MM-DD."
-        tests:
-          - unique
-          - not_null
-      - name: dia
-        description: "Día del mes correspondiente a la fecha."
-      - name: mes
-        description: "Mes del año correspondiente a la fecha."
-      - name: nombre_mes
-        description: "Nombre del mes correspondiente a la fecha."
-      - name: a_o
-        description: "Año correspondiente a la fecha."
-        tests:
-          - not_null
-      - name: trimestre
-        description: "Trimestre del año correspondiente a la fecha."
-      - name: dia_semana
-        description: "Nombre del día de la semana correspondiente a la fecha."
-      - name: es_fin_semana
-        description: "Indica si la fecha corresponde a un fin de semana (TRUE o FALSE)."
       - name: _dlt_load_id
         description: "Identificador del proceso de carga en DLT."
       - name: _dlt_id
@@ -185,7 +151,6 @@ models:
       - name: playlist_id
         description: "Identificador único de la playlist de Spotify."
         tests:
-          - unique
           - not_null
       - name: fecha
         description: "Fecha específica en la que se registraron los datos del Top 50."
@@ -199,7 +164,7 @@ models:
         description: "Posición de la canción en el ranking del Top 50."
         tests:
           - not_null
-      - name: id_song
+      - name: song_id
         description: "Identificador único de la canción en el Top 50."
         tests:
           - not_null

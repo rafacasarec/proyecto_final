@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: top10_songs_mentioned
+    description: "Identifica las 10 canciones más mencionadas en los posts de Bluesky y su posición en el Top 50."
+    columns:
+      - name: song_title
+        description: "Título de la canción mencionada."
+      - name: total_mentions
+        description: "Número total de menciones de la canción."
+      - name: top_position
+        description: "Posición de la canción en el Top 50 o indicador de que no está en el Top 50."
+      - name: total_streams
+        description: "Streams estimados de la canción."
+
+  - name: top10_artists_mentioned
+    description: "Identifica los 10 artistas más mencionados en los posts de Bluesky y su posición en el Top 50."
+    columns:
+      - name: artist_name
+        description: "Nombre del artista mencionado."
+      - name: total_mentions
+        description: "Número total de menciones del artista."
+      - name: artist_popularity
+        description: "Popularidad del artista."
+      - name: top_song_position
+        description: "Posición de la canción mejor posicionada del artista en el Top 50."
+      - name: top_song_title
+        description: "Título de la canción mejor posicionada del artista en el Top 50."
+
+  - name: tendencias_top50
+    description: "Relación entre las tendencias sociales de los artistas y su desempeño en el Top 50."
+    columns:
+      - name: trend
+        description: "Tendencia asociada al artista."
+      - name: social_improve
+        description: "Indicador de mejora en redes sociales para el artista."
+      - name: artist_name
+        description: "Nombre del artista."
+      - name: songs_in_top50
+        description: "Canciones del artista presentes en el Top 50."
+      - name: total_streams
+        description: "Streams totales acumulados por las canciones del artista en el Top 50."
+      - name: top50_position
+        description: "Mejor posición alcanzada por las canciones del artista en el Top 50."
+
+  - name: estatus_top50
+    description: "Relaciona el estatus en redes sociales y seguidores en Spotify con la posición en el Top 50."
+    columns:
+      - name: first_name
+        description: "Nombre del artista."
+      - name: followers_insta
+        description: "Número de seguidores del artista en Instagram."
+      - name: followers_X
+        description: "Número de seguidores del artista en X (Twitter)."
+      - name: spotify_followers
+        description: "Número de seguidores del artista en Spotify."
+      - name: desc_estatus
+        description: "Estatus del artista en redes sociales."
+      - name: top50_position
+        description: "Mejor posición alcanzada por el artista en el Top 50."

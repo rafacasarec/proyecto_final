@@ -8,7 +8,7 @@ with
 
 posts_artist as (
 
-    select * from {{ ref('stg_bluesky__dim_posts_artistas') }}
+    select * from {{ ref('stg_bluesky__dim_posts_artist') }}
 
 {% if is_incremental() %}
 

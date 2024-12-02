@@ -9,6 +9,7 @@ renamed as (
         {{ dbt_utils.generate_surrogate_key(['desc_estatus']) }} as id_estatus,
         desc_estatus,
         first_name,
+        {{ dbt_utils.generate_surrogate_key(['first_name']) }} as artist_id,
         followers_insta,
         total_likes_insta,
         total_coment_insta,

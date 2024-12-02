@@ -50,7 +50,7 @@ select
     fecha,
     date,
     position,
-    id_song,
+    {{ dbt_utils.generate_surrogate_key(['desc_song']) }} as song_id,
     desc_song,
     album_id,
     desc_album,
@@ -60,6 +60,6 @@ select
     streams_estimated,
     _dlt_load_id,
     _dlt_id,
-    trim(artist_id) as artist_id,
+    trim({{ dbt_utils.generate_surrogate_key(['artist_name']) }}) as artist_id,
     trim(artist_name) as artist_name
 from normalized

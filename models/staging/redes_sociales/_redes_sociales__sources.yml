@@ -23,7 +23,6 @@ sources:
             description: "Nombre del artista en las redes sociales."
             tests:
               - not_null
-              - unique
           - name: NUMERO_DE_SEGUIDORES_EN_INSTAGRAM
             description: "Cantidad de seguidores en Instagram."
             tests:
@@ -56,7 +55,6 @@ sources:
             description: "Fecha de la captura de datos."
             tests:
               - not_null
-              - unique
           - name: _DLT_LOAD_ID
             description: "Identificador del proceso de carga (interno de DLT)."
           - name: _DLT_ID

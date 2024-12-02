@@ -1,97 +1,122 @@
-with 
--- Filtrar el Top 5 del Top 50
-top5 as (
-    select
+WITH 
+-- Base del Top 50
+top50 AS (
+    SELECT
         position,
-        split(artist_name, ',') as artist_name_list,
-        desc_song as song_title,
-        popularity as artist_popularity,
+        split(artist_name, ',') AS artist_name_list,
+        desc_song AS song_title,
+        popularity AS artist_popularity,
         streams_estimated,
-        split(artist_id, ',') as artist_id_list
-    from {{ ref('fct_top_50') }}
-    where position <= 5
+        split(artist_id, ',') AS artist_id_list
+    FROM {{ ref('fct_top_50') }}
 ),
 
--- Normalizar artistas desde el Top 5
-normalized_top5 as (
-    select
-        trim(a.value) as artist_name, -- Extraer nombres de artistas desde la lista
-        trim(i.value) as artist_id,
+-- Normalizar artistas desde el Top 50
+normalized_top50 AS (
+    SELECT
+        t.position,
+        trim(a.value) AS artist_name, -- Extraer nombres de artistas desde la lista
+        trim(i.value) AS artist_id,
         t.song_title,
         t.artist_popularity,
-        t.position,
         t.streams_estimated
-    from top5 t,
-    lateral flatten(input => t.artist_name_list) as a,
-    lateral flatten(input => t.artist_id_list) as i
+    FROM top50 t,
+    LATERAL FLATTEN(input => t.artist_name_list) AS a,
+    LATERAL FLATTEN(input => t.artist_id_list) AS i
+    WHERE a.index = i.index -- Relacionar correctamente nombres e IDs
 ),
 
--- Relacionar artistas del Top 5 con géneros y seguidores
-top5_with_genres as (
-    select
+-- Relacionar artistas del Top 50 con géneros desde `dim_artista` y seguidores desde `fct_artista`
+top50_with_genres AS (
+    SELECT DISTINCT
+        t.position,
         t.artist_name,
+        t.artist_id,
         t.song_title,
         t.artist_popularity,
-        t.position,
         t.streams_estimated,
-        a.followers as artist_followers,
-        a.genero
-    from normalized_top5 t
-    left join {{ ref('dim_artista') }} a
-        on t.artist_id = a.artista_id
+        COALESCE(f.followers, 0) AS artist_followers, -- Manejar valores nulos en seguidores
+        COALESCE(a.genero, 'unknown') AS genre -- Manejar valores nulos en géneros
+    FROM normalized_top50 t
+    LEFT JOIN {{ ref('dim_artista') }} a
+        ON t.artist_id = a.artist_id
+    LEFT JOIN {{ ref('fct_artista') }} f
+        ON t.artist_id = f.artist_id
 ),
 
--- Obtener el competidor con más seguidores por género
-top_competitor_by_genre as (
-    select
-        genero,
-        name_artist as competitor_name,
-        followers as competitor_followers,
-        popularity as competitor_popularity
-    from {{ ref('dim_competidores') }}
-    where genero is not null
-    qualify row_number() over (
-        partition by genero
-        order by followers desc
+-- Obtener los 10 últimos géneros únicos del Top 50
+last_10_genres AS (
+    SELECT DISTINCT
+        genre,
+        MAX(position) AS max_position -- Aseguramos que podemos ordenar por posición
+    FROM top50_with_genres
+    WHERE genre IS NOT NULL AND genre != 'unknown' -- Excluir géneros nulos o desconocidos
+    GROUP BY genre
+    ORDER BY max_position DESC
+    LIMIT 10
+),
+
+-- Obtener el competidor con más seguidores por género desde `dim_competidores`
+top_competitors AS (
+    SELECT
+        genero AS genre,
+        name_artist AS competitor_name,
+        followers AS competitor_followers,
+        popularity AS competitor_popularity
+    FROM {{ ref('dim_competidores') }}
+    WHERE genero IS NOT NULL
+    QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY genero
+        ORDER BY followers DESC
     ) = 1
 ),
 
--- Relacionar el competidor con los artistas del Top 5
-joined_data as (
-    select
-        t.position,
-        t.artist_name as top5_artist_name,
-        t.song_title,
-        t.artist_popularity as top5_popularity,
-        t.artist_followers as top5_followers,
-        t.genero,
+-- Relacionar competidores con los géneros del Top 50
+joined_data AS (
+    SELECT DISTINCT
+        g.genre,
         c.competitor_name,
+        c.competitor_followers,
         c.competitor_popularity,
-        c.competitor_followers
-    from top5_with_genres t
-    left join top_competitor_by_genre c
-        on t.genero = c.genero
+        t.artist_name AS top50_artist_name,
+        t.artist_popularity AS top50_artist_popularity,
+        t.artist_followers AS top50_artist_followers,
+        t.song_title AS top50_song_title,
+        t.position AS top50_position
+    FROM last_10_genres g
+    LEFT JOIN top_competitors c
+        ON LOWER(g.genre) = LOWER(c.genre)
+    LEFT JOIN top50_with_genres t
+        ON LOWER(g.genre) = LOWER(t.genre)
 ),
 
--- Evitar géneros repetidos
-unique_genres as (
-    select 
-        *,
-        row_number() over (partition by genero order by position, top5_popularity desc) as genre_rank
-    from joined_data
+-- Filtrar para evitar canciones repetidas
+unique_songs AS (
+    SELECT DISTINCT
+        genre,
+        competitor_name,
+        competitor_followers,
+        competitor_popularity,
+        top50_artist_name,
+        top50_artist_popularity,
+        top50_artist_followers,
+        top50_song_title,
+        top50_position,
+        ROW_NUMBER() OVER (PARTITION BY top50_artist_name ORDER BY top50_position ASC) AS song_rank
+    FROM joined_data
 )
 
--- Seleccionar solo la primera aparición de cada género
-select
-    position,
-    top5_artist_name,
-    song_title,
-    top5_popularity,
-    top5_followers,
-    genero,
+-- Seleccionar solo una canción por artista
+SELECT 
+    genre,
     competitor_name,
+    competitor_followers,
     competitor_popularity,
-    competitor_followers
-from unique_genres
-where genre_rank = 1
-order by position, competitor_popularity desc
+    top50_artist_name,
+    top50_artist_popularity,
+    top50_artist_followers,
+    top50_song_title,
+    top50_position
+FROM unique_songs
+WHERE song_rank = 1
+ORDER BY top50_position ASC

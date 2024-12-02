@@ -1,90 +1,101 @@
-with 
--- Base normalizada desde stg_spotify__fct_top_50
-top50 as (
-    select * from {{ ref('fct_top_50') }}
+WITH 
+
+-- Base del Top 50
+top50 AS (
+    SELECT *
+    FROM {{ ref('fct_top_50') }}
 ),
 
-split_artists as (
-    select
-        id_song,
-        split(artist_id, ',') as artist_id_list,
-        split(artist_name, ',') as artist_name_list,
+-- Dividir artistas en múltiples filas
+split_artists AS (
+    SELECT
+        song_id,
+        SPLIT(artist_id, ',') AS artist_id_list,
+        SPLIT(artist_name, ',') AS artist_name_list,
         album_id,
-        desc_album as album_title,
-        position,
-        _dlt_load_id,
-        _dlt_id
-    from top50
+        desc_album AS album_title,
+        position
+    FROM top50
 ),
 
-normalized as (
-    select
-        id_song,
+normalized AS (
+    SELECT
+        song_id,
         position,
         album_id,
         album_title,
-        artist_id_list[index] as artist_id,
-        artist_name_list[index] as artist_name
-    from split_artists,
-    lateral flatten(input => artist_id_list) as index
+        artist_id_list[index] AS artist_id,
+        artist_name_list[index] AS artist_name
+    FROM split_artists,
+    LATERAL FLATTEN(input => artist_id_list) AS index
+),
+
+-- Revisar si hay géneros nulos
+genre_check AS (
+    SELECT
+        n.artist_id,
+        a.genero AS genre_in_artista,
+        g.desc_genero AS genre_in_genero
+    FROM normalized n
+    LEFT JOIN {{ ref('dim_artista') }} a
+        ON TRIM(n.artist_id) = a.artist_id
+    LEFT JOIN {{ ref('dim_genero') }} g
+        ON TRIM(a.genero) = g.desc_genero
 ),
 
 -- Contar las apariciones por género
-genre_count as (
-    select
-        g.desc_genero as genre,
-        count(*) as count_presence
-    from normalized n
-    left join {{ ref('dim_artista') }} a
-        on n.artist_id = a.artista_id
-    left join {{ ref('dim_genero') }} g
-        on a.genero = g.desc_genero
-    group by g.desc_genero
-    order by count_presence desc
-    limit 1 -- Tomar el género con mayor presencia
+genre_count AS (
+    SELECT
+        genre_in_genero AS genre,
+        COUNT(*) AS count_presence
+    FROM genre_check
+    WHERE genre_in_genero IS NOT NULL -- Asegurarse de excluir valores nulos
+    GROUP BY genre_in_genero
+    ORDER BY count_presence DESC
+    LIMIT 1
 ),
 
 -- Contar las apariciones por artista
-artist_count as (
-    select
+artist_count AS (
+    SELECT
         n.artist_name,
-        count(*) as count_presence
-    from normalized n
-    group by n.artist_name
-    order by count_presence desc
-    limit 1 -- Tomar el artista con mayor presencia
+        COUNT(*) AS count_presence
+    FROM normalized n
+    GROUP BY n.artist_name
+    ORDER BY count_presence DESC
+    LIMIT 1
 ),
 
 -- Contar las apariciones por álbum
-album_count as (
-    select
+album_count AS (
+    SELECT
         n.album_title,
-        count(*) as count_presence
-    from normalized n
-    group by n.album_title
-    order by count_presence desc
-    limit 1 -- Tomar el álbum con mayor presencia
+        COUNT(*) AS count_presence
+    FROM normalized n
+    GROUP BY n.album_title
+    ORDER BY count_presence DESC
+    LIMIT 1
 )
 
 -- Consolidar resultados
-select 
-    'Genre' as category,
-    g.genre as value,
-    g.count_presence as presence
-from genre_count g
+SELECT 
+    'Genre' AS category,
+    g.genre AS value,
+    g.count_presence AS presence
+FROM genre_count g
 
-union all
+UNION ALL
 
-select 
-    'Artist' as category,
-    a.artist_name as value,
-    a.count_presence as presence
-from artist_count a
+SELECT 
+    'Artist' AS category,
+    a.artist_name AS value,
+    a.count_presence AS presence
+FROM artist_count a
 
-union all
+UNION ALL
 
-select 
-    'Album' as category,
-    al.album_title as value,
-    al.count_presence as presence
-from album_count al
+SELECT 
+    'Album' AS category,
+    al.album_title AS value,
+    al.count_presence AS presence
+FROM album_count al

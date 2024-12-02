@@ -5,7 +5,7 @@ with source as (
 exploded as (
     select
         -- Mantén otros campos de la tabla de canciones
-        cancion_id,
+        {{ dbt_utils.generate_surrogate_key(['titulo']) }} as song_id,
         titulo as desc_song,
         album_id,
         album_name as desc_album,
@@ -25,7 +25,7 @@ exploded as (
 
 normalized as (
     select
-        cancion_id,
+        song_id,
         desc_song,
         album_id,
         desc_album,
@@ -45,7 +45,7 @@ normalized as (
 )
 
 select
-    cancion_id,
+    song_id,
     desc_song,
     album_id,
     desc_album,
@@ -56,6 +56,6 @@ select
     spotify_url,
     _dlt_load_id,
     _dlt_id,
-    artista_id,
+    {{ dbt_utils.generate_surrogate_key(['artist_name']) }} as artist_id,
     artist_name
 from normalized

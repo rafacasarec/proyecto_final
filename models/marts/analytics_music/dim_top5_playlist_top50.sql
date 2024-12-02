@@ -1,38 +1,38 @@
-with 
+WITH 
 
 -- Base del Top 50 con listas de IDs y nombres de artistas
-base as (
-    select 
+base AS (
+    SELECT 
         f.position,
         f.desc_song,
-        split(f.artist_id, ',') as artist_id_list, -- Dividir IDs de artistas en lista
-        split(f.artist_name, ',') as artist_name_list, -- Dividir nombres de artistas en lista
+        SPLIT(f.artist_id, ',') AS artist_id_list, -- Dividir IDs de artistas en lista
+        SPLIT(f.artist_name, ',') AS artist_name_list, -- Dividir nombres de artistas en lista
         f.album_id,
         f.desc_album,
         f.popularity,
         f.streams_estimated
-    from 
-        {{ ref('fct_top_50') }} f -- Ajustado a la referencia en marts
+    FROM 
+        {{ ref('fct_top_50') }} f
 ),
 
 -- Expandir artistas en múltiples filas
-expanded_artists as (
-    select
+expanded_artists AS (
+    SELECT
         b.position,
         b.desc_song,
-        b.artist_name_list[index] as artist_name, -- Extraer nombre del artista
-        b.artist_id_list[index] as artist_id, -- Extraer ID del artista
+        b.artist_name_list[index] AS artist_name, -- Extraer nombre del artista
+        b.artist_id_list[index] AS artist_id, -- Extraer ID del artista
         b.desc_album,
         b.popularity,
         b.streams_estimated
-    from 
+    FROM 
         base b,
-        lateral flatten(input => b.artist_id_list) as index
+        LATERAL FLATTEN(input => b.artist_id_list) AS index
 ),
 
 -- Relacionar artistas con sus géneros
-artists_with_genres as (
-    select
+artists_with_genres AS (
+    SELECT
         ea.position,
         ea.desc_song,
         ea.artist_name,
@@ -40,48 +40,48 @@ artists_with_genres as (
         ea.desc_album,
         ea.popularity,
         ea.streams_estimated,
-        ag.genero as desc_genero -- Traer géneros desde la tabla de artistas
-    from expanded_artists ea
-    left join {{ ref('dim_artista') }} ag -- Ajustado a la referencia en marts
-    on trim(ea.artist_id) = ag.artista_id
+        ag.genero AS desc_genero -- Traer géneros desde la tabla de artistas
+    FROM expanded_artists ea
+    LEFT JOIN {{ ref('dim_artista') }} ag
+    ON TRIM(ea.artist_id) = ag.artist_id
 ),
 
 -- Consolidar artistas y géneros por canción
-consolidated as (
-    select 
+consolidated AS (
+    SELECT 
         position,
         desc_song,
-        listagg(distinct artist_name, ', ') within group (order by artist_name) as artists, -- Consolidar artistas
+        LISTAGG(DISTINCT artist_name, ', ') WITHIN GROUP (ORDER BY artist_name) AS artists, -- Consolidar artistas
         desc_album,
         popularity,
         streams_estimated,
-        listagg(distinct desc_genero, ', ') within group (order by desc_genero) as desc_genero -- Consolidar géneros
-    from artists_with_genres
-    group by 
+        LISTAGG(DISTINCT desc_genero, ', ') WITHIN GROUP (ORDER BY desc_genero) AS desc_genero -- Consolidar géneros
+    FROM artists_with_genres
+    GROUP BY 
         position, desc_song, desc_album, popularity, streams_estimated
 ),
 
 -- Filtrar el Top 5
-filtered as (
-    select *
-    from consolidated
-    where position <= 5
+filtered AS (
+    SELECT *
+    FROM consolidated
+    WHERE position <= 10
 ),
 
 -- Renombrar y enriquecer la salida
-renamed as (
-    select 
+renamed AS (
+    SELECT 
         position,
-        desc_song as song_title,
+        desc_song AS song_title,
         artists,
-        desc_album as album_title,
+        desc_album AS album_title,
         desc_genero,
         popularity,
         streams_estimated
-    from filtered
-    order by position
+    FROM filtered
+    ORDER BY position
 )
 
-select 
+SELECT 
     *
-from renamed
+FROM renamed

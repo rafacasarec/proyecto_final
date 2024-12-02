@@ -1,0 +1,130 @@
+version: 2
+
+models:
+  - name: top10_songs_popularity
+    description: >
+      Modelo que genera el Top 10 de las canciones más populares según su puntuación de popularidad en Spotify.
+    columns:
+      - name: id_song
+        description: >
+          Identificador único de la canción.
+      - name: song_title
+        description: >
+          Título de la canción.
+      - name: popularity
+        description: >
+          Puntuación de popularidad de la canción en Spotify.
+
+  - name: top10_artist_popularity
+    description: >
+      Modelo que genera el Top 10 de los artistas más populares según su puntuación de popularidad en Spotify.
+    columns:
+      - name: id_artist
+        description: >
+          Identificador único del artista.
+      - name: artist
+        description: >
+          Nombre del artista.
+      - name: genres
+        description: >
+          Lista de géneros asociados al artista.
+      - name: popularity
+        description: >
+          Puntuación de popularidad del artista en Spotify.
+
+  - name: top10_album_popularity
+    description: >
+      Modelo que genera el Top 10 de los álbumes más populares según la suma de la popularidad de sus canciones en Spotify.
+    columns:
+      - name: id_album
+        description: >
+          Identificador único del álbum.
+      - name: album_title
+        description: >
+          Título del álbum.
+      - name: genres
+        description: >
+          Lista de géneros asociados al álbum.
+      - name: popularity
+        description: >
+          Puntuación de popularidad del álbum basada en la suma de la popularidad de sus canciones.
+
+  - name: top10_popularity_genre
+    description: >
+      Modelo que genera el Top 10 de los géneros más populares según la suma de la popularidad de los artistas asociados en Spotify.
+    columns:
+      - name: id_genre
+        description: >
+          Identificador único del género.
+      - name: genre
+        description: >
+          Nombre del género musical.
+      - name: popularity
+        description: >
+          Puntuación de popularidad del género basada en la suma de la popularidad de los artistas asociados.
+
+  - name: competition_top50
+    description: >
+      Modelo que identifica los 10 principales competidores basados en los 10 últimos géneros del Top 50.
+      Se consideran los artistas competidores con mayor popularidad dentro de cada género, comparándolos con 
+      los artistas del Top 50 y sus canciones más relevantes.
+    columns:
+      - name: genre
+        description: "Género musical asociado al artista del Top 50 y al competidor."
+      - name: competitor_name
+        description: "Nombre del artista competidor con mayor popularidad dentro del género."
+      - name: competitor_followers
+        description: "Cantidad de seguidores del competidor en Spotify."
+      - name: competitor_popularity
+        description: "Puntuación de popularidad del competidor en Spotify."
+      - name: top50_artist_name
+        description: "Nombre del artista en el Top 50 que pertenece al mismo género."
+      - name: top50_artist_popularity
+        description: "Puntuación de popularidad del artista del Top 50 en Spotify."
+      - name: top50_artist_followers
+        description: "Cantidad de seguidores del artista del Top 50 en Spotify."
+      - name: top50_song_title
+        description: "Título de la canción asociada al artista del Top 50."
+      - name: top50_position
+        description: "Posición de la canción del artista en el Top 50."
+
+  - name: dim_top5_playlist_top50
+    description: >
+      Modelo que genera una vista enriquecida del Top 5 de canciones de Spotify, incluyendo artistas, álbumes y géneros asociados.
+    columns:
+      - name: position
+        description: >
+          Posición de la canción en el Top 5.
+      - name: song_title
+        description: >
+          Título de la canción.
+      - name: artists
+        description: >
+          Lista de artistas asociados a la canción.
+      - name: album_title
+        description: >
+          Título del álbum asociado a la canción.
+      - name: desc_genero
+        description: >
+          Lista de géneros asociados a los artistas de la canción.
+      - name: popularity
+        description: >
+          Puntuación de popularidad de la canción.
+      - name: streams_estimated
+        description: >
+          Estimación de reproducciones de la canción en Spotify.
+
+  - name: most_apariences_top50
+    description: >
+      Modelo que identifica las entidades con mayor presencia en el Top 50 de Spotify, incluyendo el género más frecuente,
+      el artista más mencionado y el álbum más recurrente en las listas.
+    columns:
+      - name: category
+        description: >
+          Categoría de la entidad analizada: género, artista o álbum.
+      - name: value
+        description: >
+          Nombre del género, artista o álbum con mayor presencia en el Top 50.
+      - name: presence
+        description: >
+          Número de apariciones de la entidad en el Top 50.

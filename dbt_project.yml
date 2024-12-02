@@ -37,7 +37,7 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   proyecto_final:
-    # Applies to all files under models/example/
+    
     staging:
       +database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
       +materialized: view
@@ -47,3 +47,13 @@ models:
         +schema: spotify
       bluesky: 
         +schema: bluesky
+
+    marts:
+      +database: "{{ env_var('DBT_ENVIRONMENTS') }}_GOLD_DB"
+      +materialized: table
+      core:
+        +schema: core
+      analytics_music:
+        +schema: analytics_music
+      analytics_social_media:
+        +schema: analytics_social_media
