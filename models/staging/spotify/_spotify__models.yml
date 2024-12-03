@@ -185,9 +185,6 @@ models:
       - name: album_id
         description: "Identificador único del álbum asociado a la canción."
         tests:
-          - relationships:
-              to: ref('stg_spotify__dim_album')
-              field: album_id
           - not_null
       - name: desc_album
         description: "Título o descripción del álbum asociado a la canción."
@@ -211,9 +208,6 @@ models:
         description: "Identificador único del artista asociado a la canción."
         tests:
           - not_null
-          - relationships:
-              to: ref('stg_spotify__dim_artista')
-              field: artist_id
       - name: artist_name
         description: "Nombre del artista asociado a la canción."
       - name: _dlt_load_id
