@@ -24,11 +24,11 @@ renamed as (
         author_handle as desc_user_bluesky,
         content,
         convert_timezone('UTC', created_at) as post_created,
+        {{ dbt_utils.generate_surrogate_key(['trim(mentioned_artist)']) }} as id_artist,
+        coalesce(nullif(mentioned_artist, null), 'no artist mentioned on text') as mentioned_artist,
         reply_count,
         repost_count,
         like_count,
-        {{ dbt_utils.generate_surrogate_key(['mentioned_artist']) }} as id_artist,
-        coalesce(nullif(mentioned_artist, null), 'no artist mentioned on text') as mentioned_artist,
         _dlt_load_id,
         _dlt_id
 

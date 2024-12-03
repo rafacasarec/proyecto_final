@@ -12,7 +12,7 @@ split_artists as (
         track_name as desc_song,
         split(artist_id, ',') as artist_id_list,
         split(artist_name, ',') as artist_name_list,
-        album_id,
+        {{ dbt_utils.generate_surrogate_key(['trim(album_name)']) }} as album_id,
         album_name as desc_album,
         date(release_date) as release_date,
         duration_ms,
@@ -50,8 +50,9 @@ select
     fecha,
     date,
     position,
-    {{ dbt_utils.generate_surrogate_key(['desc_song']) }} as song_id,
+    {{ dbt_utils.generate_surrogate_key(['trim(desc_song)']) }} as song_id,
     desc_song,
+    trim(artist_name) as artist_name,
     album_id,
     desc_album,
     release_date,
@@ -60,6 +61,6 @@ select
     streams_estimated,
     _dlt_load_id,
     _dlt_id,
-    trim({{ dbt_utils.generate_surrogate_key(['artist_name']) }}) as artist_id,
-    trim(artist_name) as artist_name
+    {{ dbt_utils.generate_surrogate_key(['trim(artist_name)']) }} as artist_id
+
 from normalized

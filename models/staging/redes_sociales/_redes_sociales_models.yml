@@ -21,6 +21,13 @@ models:
         description: "Incremento de seguidores durante la última semana."
         tests:
           - not_null
+      - name: artist_id
+        description: "Incremento de seguidores durante la última semana."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_fct_artista')
+              field: artist_id
 
   - name: estatus_rrss  # Nombre del segundo modelo
     description: "Modelo que evalúa el estatus de los artistas en redes sociales basándose en métricas clave como seguidores, likes y engagement."
@@ -30,6 +37,13 @@ models:
         tests:
           - unique
           - not_null
+      - name: artist_id
+        description: "Incremento de seguidores durante la última semana."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_fct_artista')
+              field: artist_id
       - name: desc_estatus
         description: "Descripción del estatus del artista."
         tests:

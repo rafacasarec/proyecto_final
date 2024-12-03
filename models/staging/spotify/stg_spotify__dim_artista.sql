@@ -10,7 +10,7 @@ renamed as (
 
     select
         nombre,
-        {{ dbt_utils.generate_surrogate_key(['nombre']) }} as artist_id,
+        {{ dbt_utils.generate_surrogate_key(['trim(nombre)']) }} as artist_id,
         case
             when trim(generos) = '' or generos is null then 'unknown'
             else generos
