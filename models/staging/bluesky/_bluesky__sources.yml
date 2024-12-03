@@ -3,7 +3,7 @@ version: 2
 sources:
 
   - name: bluesky # name of the source 
-    schema: bluesky_staging # this is the schema our raw data lives in
+    schema: bluesky # this is the schema our raw data lives in
     database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB" # this is the name of our database
 
     quoting:

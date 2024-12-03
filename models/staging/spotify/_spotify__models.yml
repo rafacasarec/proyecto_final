@@ -82,6 +82,10 @@ models:
       - name: explicit
         description: "Indica si la canción contiene contenido explícito (TRUE o FALSE)."
       - name: popularity
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
         description: "Puntuación de popularidad de la canción en Spotify."
       - name: spotify_url
         description: "URL de la canción en Spotify."
