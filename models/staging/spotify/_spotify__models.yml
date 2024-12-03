@@ -39,14 +39,15 @@ models:
         description: "Identificador único del artista."
         tests:
           - not_null
+          - relationships:
+              to: ref('stg_fct_artista')
+              field: artist_id
       - name: name_artist
         description: "Nombre del artista."
         tests:
           - not_null
       - name: followers
         description: "Cantidad de seguidores del artista en Spotify."
-      - name: popularity
-        description: "Puntuación de popularidad del artista en Spotify."
       - name: spotify_url
         description: "URL del perfil del artista en Spotify."
       - name: _dlt_load_id
@@ -114,6 +115,10 @@ models:
       - name: followers
         description: "Cantidad de seguidores del competidor en Spotify."
       - name: popularity
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
         description: "Puntuación de popularidad del competidor en Spotify."
       - name: spotify_url
         description: "URL del perfil del competidor en Spotify."
@@ -168,19 +173,33 @@ models:
         description: "Identificador único de la canción en el Top 50."
         tests:
           - not_null
+          - relationships:
+              to: ref('stg_spotify__dim_cancion')
+              field: song_id
       - name: desc_song
         description: "Título o descripción de la canción."
       - name: album_id
         description: "Identificador único del álbum asociado a la canción."
         tests:
+          - relationships:
+              to: ref('stg_spotify__dim_album')
+              field: album_id
           - not_null
       - name: desc_album
         description: "Título o descripción del álbum asociado a la canción."
       - name: release_date
         description: "Fecha de lanzamiento del álbum asociado a la canción."
       - name: duration_ms
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1200000
         description: "Duración de la canción en milisegundos."
       - name: popularity
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
         description: "Nivel de popularidad de la canción en Spotify."
       - name: streams_estimated
         description: "Número estimado de streams de la canción."
@@ -188,6 +207,9 @@ models:
         description: "Identificador único del artista asociado a la canción."
         tests:
           - not_null
+          - relationships:
+              to: ref('stg_spotify__dim_artista')
+              field: artist_id
       - name: artist_name
         description: "Nombre del artista asociado a la canción."
       - name: _dlt_load_id
@@ -195,3 +217,32 @@ models:
       - name: _dlt_id
         description: "Identificador único del registro en DLT."
 
+  - name: stg_fct_artista
+    description: >
+      Este modelo procesa y transforma los datos de los artistas de Spotify 
+      provenientes de la tabla `dim_artista` en la capa de staging. Incluye 
+      información clave como el nombre del artista, el número de seguidores, 
+      su popularidad y un identificador único generado mediante un hash.
+    columns:
+      - name: nombre
+        description: "Nombre del artista tal como aparece en Spotify."
+        tests:
+          - not_null
+      - name: artist_id
+        description: >
+          Identificador único generado para el artista utilizando un hash
+          basado en su nombre. Sirve como clave principal para identificar artistas.
+        tests:
+          - unique
+          - not_null
+      - name: followers
+        description: "Cantidad de seguidores del artista en Spotify."
+        tests:
+          - not_null
+      - name: popularity
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+        description: "Puntuación de popularidad del artista en Spotify."

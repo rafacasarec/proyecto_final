@@ -5,7 +5,7 @@ with source as (
 exploded as (
     select
         -- Mantén otros campos de la tabla de canciones
-        {{ dbt_utils.generate_surrogate_key(['titulo']) }} as song_id,
+        {{ dbt_utils.generate_surrogate_key(['trim(titulo)']) }} as song_id,
         titulo as desc_song,
         album_id,
         album_name as desc_album,

@@ -8,7 +8,7 @@ WITH source AS (
 renamed AS (
 
     SELECT
-        album_id,
+        {{ dbt_utils.generate_surrogate_key(['trim(titulo)']) }} as album_id,
         titulo AS desc_album,
         {{ dbt_utils.generate_surrogate_key(['artista_principal_name']) }} as artist_id,
         artista_principal_name AS name_artist,
